@@ -12,11 +12,11 @@ function App() {
 
   const wavesurfer = useRef<WaveSurfer | null>(null);
   const waveformRef = useRef<HTMLDivElement>(null);
-  const mediaRecorder = useRef<MediaRecorder | null>(null);
-  const audioChunks = useRef<Blob[]>([]);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const audioChunksRef = useRef<Blob[]>([]);
   const streamRef = useRef<MediaStream | null>(null);
 
-  const initWaveSurfer = (url: string) => {
+  const initWaveSurfer = (audioUrl: string) => {
     if (wavesurfer.current) wavesurfer.current.destroy();
     wavesurfer.current = WaveSurfer.create({
       container: waveformRef.current!,
@@ -26,42 +26,47 @@ function App() {
       height: 110,
       barWidth: 3,
     });
-    wavesurfer.current.load(url);
+    wavesurfer.current.load(audioUrl);
   };
 
-  const handleFile = (selectedFile: File) => {
+  const handleFileUpload = (selectedFile: File) => {
     setFile(selectedFile);
     setPrediction(null);
     initWaveSurfer(URL.createObjectURL(selectedFile));
   };
 
   const startRecording = async () => {
-    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    streamRef.current = stream;
-    mediaRecorder.current = new MediaRecorder(stream);
-    audioChunks.current = [];
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      streamRef.current = stream;
+      mediaRecorderRef.current = new MediaRecorder(stream);
+      audioChunksRef.current = [];
 
-    mediaRecorder.current.ondataavailable = e => audioChunks.current.push(e.data);
-    mediaRecorder.current.onstop = () => {
-      const blob = new Blob(audioChunks.current, { type: 'audio/wav' });
-      const newFile = new File([blob], "recording.wav", { type: "audio/wav" });
-      setFile(newFile);
-      initWaveSurfer(URL.createObjectURL(blob));
-    };
+      mediaRecorderRef.current.ondataavailable = (e) => audioChunksRef.current.push(e.data);
+      mediaRecorderRef.current.onstop = () => {
+        const blob = new Blob(audioChunksRef.current, { type: 'audio/wav' });
+        const audioFile = new File([blob], "recording.wav", { type: "audio/wav" });
+        setFile(audioFile);
+        initWaveSurfer(URL.createObjectURL(blob));
+      };
 
-    mediaRecorder.current.start();
-    setIsRecording(true);
+      mediaRecorderRef.current.start();
+      setIsRecording(true);
+    } catch (err) {
+      alert("لا يمكن الوصول للميكروفون");
+    }
   };
 
   const stopRecording = () => {
-    mediaRecorder.current?.stop();
+    mediaRecorderRef.current?.stop();
     streamRef.current?.getTracks().forEach(track => track.stop());
     setIsRecording(false);
   };
 
-  const predict = async () => {
+  const predictEmotion = async () => {
     if (!file) return;
     setLoading(true);
+
     const formData = new FormData();
     formData.append('file', file);
 
@@ -84,15 +89,15 @@ function App() {
         <div className="flex gap-4 justify-center mb-8">
           <button
             onClick={isRecording ? stopRecording : startRecording}
-            className={`flex items-center gap-3 px-8 py-4 rounded-2xl font-semibold ${isRecording ? 'bg-red-600' : 'bg-indigo-600'}`}
+            className={`flex items-center gap-3 px-8 py-4 rounded-2xl font-semibold transition ${isRecording ? 'bg-red-600 hover:bg-red-700' : 'bg-indigo-600 hover:bg-indigo-700'}`}
           >
-            {isRecording ? <Square /> : <Mic />} 
+            {isRecording ? <Square size={24} /> : <Mic size={24} />}
             {isRecording ? 'إيقاف التسجيل' : 'تسجيل صوت'}
           </button>
 
           <label className="flex items-center gap-3 px-8 py-4 bg-slate-800 hover:bg-slate-700 rounded-2xl cursor-pointer">
-            <Upload /> رفع ملف
-            <input type="file" accept="audio/*" className="hidden" onChange={e => e.target.files && handleFile(e.target.files[0])} />
+            <Upload size={24} /> رفع ملف صوتي
+            <input type="file" accept="audio/*" className="hidden" onChange={(e) => e.target.files && handleFileUpload(e.target.files[0])} />
           </label>
         </div>
 
@@ -101,9 +106,9 @@ function App() {
             <div ref={waveformRef} className="mb-6" />
             <div className="flex gap-4 justify-center">
               <button onClick={() => wavesurfer.current?.playPause()} className="px-6 py-3 bg-slate-800 rounded-xl">
-                {isPlaying ? <Pause /> : <Play />} 
+                {isPlaying ? <Pause /> : <Play />}
               </button>
-              <button onClick={predict} disabled={loading} className="px-10 py-3 bg-indigo-600 rounded-xl font-semibold">
+              <button onClick={predictEmotion} disabled={loading} className="px-10 py-3 bg-indigo-600 rounded-xl font-semibold">
                 {loading ? 'جاري التحليل...' : '🔍 تحليل العاطفة'}
               </button>
             </div>
@@ -112,8 +117,8 @@ function App() {
 
         {prediction && (
           <div className="bg-slate-900 rounded-3xl p-10">
-            <div className="text-center mb-8">
-              <div className="text-8xl mb-4">{prediction.emoji}</div>
+            <div className="text-center">
+              <div className="text-9xl mb-6">{prediction.emoji}</div>
               <h2 className="text-5xl font-bold">{prediction.emotion}</h2>
               <p className="text-3xl text-indigo-400 mt-2">{prediction.confidence}% ثقة</p>
             </div>
