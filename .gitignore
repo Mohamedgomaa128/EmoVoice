@@ -5,8 +5,20 @@ frontend/.env
 
 # Backend
 backend/__pycache__
-backend/models/*.h5
 *.pyc
+
+# Python virtual environments (everywhere)
+**/venv/
+**/.venv/
+
+# Legacy / artifacts (don't upload)
+files/
+files.zip
+Speech emotion recognition/
+
+# Model weights: keep the main one, ignore any other heavy .h5
+backend/models/*.h5
+!backend/models/best_model.h5
 
 # General
 .DS_Store

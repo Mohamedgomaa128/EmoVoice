@@ -1,0 +1,43 @@
+# ====================== save_model.py ======================
+import numpy as np
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Conv2D, MaxPooling2D, Flatten, Dense, Dropout
+from tensorflow.keras.optimizers import Adam
+
+# نفس المعمارية اللي موجودة في notebook بتاعك
+def create_model():
+    model = Sequential([
+        Conv2D(32, (3, 3), activation='relu', input_shape=(60, 256, 1)),
+        MaxPooling2D((2, 2)),
+        
+        Conv2D(64, (3, 3), activation='relu'),
+        MaxPooling2D((2, 2)),
+        
+        Conv2D(128, (3, 3), activation='relu'),
+        MaxPooling2D((2, 2)),
+        
+        Conv2D(256, (3, 3), activation='relu'),
+        MaxPooling2D((2, 2)),
+        
+        Flatten(),
+        Dense(256, activation='relu'),
+        Dropout(0.5),
+        Dense(6, activation='softmax')
+    ])
+
+    model.compile(
+        optimizer=Adam(learning_rate=0.0006),
+        loss='sparse_categorical_crossentropy',
+        metrics=['accuracy']
+    )
+    
+    return model
+
+
+if __name__ == "__main__":
+    model = create_model()
+    model.summary()   # عشان تشوف هيكل المودل
+
+    # حفظ المودل
+    model.save("models/best_model.h5")
+    print("\n✅ Model saved successfully as 'best_model.h5'")
