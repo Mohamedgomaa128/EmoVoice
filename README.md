@@ -26,24 +26,28 @@ The application has been updated with modern AI-agent techniques, a highly polis
 
 Here is a preview of the EmoVoice web interface:
 
-### 1. Home Page / Ready State
-The clean, modern dashboard where users can record voice or upload audio files.
+### 1. Home Page (Ready State)
+The clean, modern dashboard where users can choose to record voice or upload audio files.
 ![Home Page](./Emo%20Screens/Screenshot%202026-06-09%20093434.png)
 
-### 2. Audio Loaded & Waveform Visualization
-Once an audio file is uploaded or recorded, it generates a beautiful reactive waveform.
-![Audio Loaded](./Emo%20Screens/Screenshot%202026-06-09%20093549.png)
+### 2. Audio File Loaded (Ready for analysis)
+Once a local audio file is uploaded, the interface shows the file information and options to play or analyze it.
+![Audio File Loaded](./Emo%20Screens/Screenshot%202026-06-09%20093549.png)
 
-### 3. Emotion Detection (Neutral)
-The inference result highlights the predicted emotion with a glowing balance indicator and full probability distribution.
-![Neutral Emotion](./Emo%20Screens/Screenshot%202026-06-09%20094217.png)
+### 3. Active Microphone Recording
+Real-time indicator showing that recording is in progress with an active duration timer.
+![Microphone Recording](./Emo%20Screens/Screenshot%202026-06-09%20094003.png)
 
-### 4. Emotion Detection (Happy)
-Showing the glowing sun icon representing a positive/happy speech emotion.
-![Happy Emotion](./Emo%20Screens/Screenshot%202026-06-09%20094319.png)
+### 4. Waveform Visualization
+The recorded audio is processed, generating a beautiful, interactive wave visualization.
+![Waveform Visualization](./Emo%20Screens/Screenshot%202026-06-09%20094319.png)
 
-### 5. Emotion Detection (Sad)
-A raining cloud representation of sad voice tones.
+### 5. Emotion Detection Result — Happy
+The AI outputs the emotion prediction "Happy" (visualized using a glowing Sun icon) along with its probability breakdown.
+![Happy Emotion](./Emo%20Screens/Screenshot%202026-06-09%20094217.png)
+
+### 6. Emotion Detection Result — Sad
+The AI outputs the emotion prediction "Sad" (visualized using a glowing Cloud Rain icon) with a custom probability layout.
 ![Sad Emotion](./Emo%20Screens/Screenshot%202026-06-09%20094343.png)
 
 ---
