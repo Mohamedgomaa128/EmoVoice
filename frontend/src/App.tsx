@@ -1,7 +1,16 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import WaveSurfer from 'wavesurfer.js';
 import axios from 'axios';
-import { Upload, Play, Pause, Mic, Square, Brain, AudioLines, RefreshCw } from 'lucide-react';
+import { Upload, Play, Pause, Mic, Square, Brain, AudioLines, RefreshCw, Flame, ThumbsDown, AlertTriangle, Sun, Scale, CloudRain } from 'lucide-react';
+
+const EMOTION_ICONS: Record<string, React.ComponentType<any>> = {
+  ANG: Flame,
+  DIS: ThumbsDown,
+  FEA: AlertTriangle,
+  HAP: Sun,
+  NEU: Scale,
+  SAD: CloudRain,
+};
 
 interface Prediction {
   emotion: string;
@@ -179,7 +188,7 @@ function App() {
       <main className="max-w-4xl mx-auto px-8 py-12">
         {/* Hero */}
         <div className="text-center mb-12">
-          <h1 className="text-5xl font-bold mb-3 bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
+          <h1 className="text-5xl font-bold mb-3 pb-2 leading-normal bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
             تحليل المشاعر الصوتية
           </h1>
           <p className="text-slate-400 text-lg">سجّل صوتك أو ارفع ملفاً صوتياً وسنكشف العاطفة الكامنة فيه</p>
@@ -277,7 +286,22 @@ function App() {
           <div className="bg-slate-900/80 border border-white/5 rounded-3xl p-8 shadow-2xl">
             {/* Primary result */}
             <div className="text-center mb-10">
-              <div className="text-8xl mb-4 drop-shadow-lg">{prediction.emoji}</div>
+              <div className="flex justify-center mb-6">
+                {(() => {
+                  const IconComponent = EMOTION_ICONS[prediction.emotion];
+                  const colors: Record<string, string> = {
+                    ANG: 'text-red-500 drop-shadow-[0_0_15px_rgba(239,68,68,0.5)]',
+                    DIS: 'text-green-600 drop-shadow-[0_0_15px_rgba(22,163,74,0.5)]',
+                    FEA: 'text-purple-500 drop-shadow-[0_0_15px_rgba(168,85,247,0.5)]',
+                    HAP: 'text-yellow-400 drop-shadow-[0_0_15px_rgba(250,204,21,0.5)]',
+                    NEU: 'text-slate-400 drop-shadow-[0_0_15px_rgba(148,163,184,0.5)]',
+                    SAD: 'text-blue-400 drop-shadow-[0_0_15px_rgba(96,165,250,0.5)]',
+                  };
+                  return IconComponent ? (
+                    <IconComponent size={80} className={`${colors[prediction.emotion] ?? 'text-indigo-400'} animate-pulse`} />
+                  ) : null;
+                })()}
+              </div>
               <h2 className="text-4xl font-bold mb-1">
                 {EMOTION_LABELS[prediction.emotion] ?? prediction.emotion}
               </h2>
